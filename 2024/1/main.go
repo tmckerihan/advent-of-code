@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func txt_to_list(path string) ([]int, []int) {
+func txtToList(path string) ([]int, []int) {
 	file, err := os.Open(path)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
@@ -48,10 +48,7 @@ func txt_to_list(path string) ([]int, []int) {
 	return numbers_left, numbers_right
 }
 
-func main() {
-	// read columns into lists
-	numbers_left, numbers_right := txt_to_list("./input.txt")
-
+func calculateTotalDistance(numbers_left, numbers_right []int) int {
 	// sort ascending
 	sort.Ints(numbers_left)
 	sort.Ints(numbers_right)
@@ -62,6 +59,39 @@ func main() {
 		total_distance += int(math.Abs(float64(numbers_left[i] - numbers_right[i])))
 
 	}
+	return total_distance
+}
 
-	fmt.Println("The total distance is: ", total_distance)
+func countOccurrences(arr []int) map[int]int {
+	occurences := make(map[int]int)
+	for _, num := range arr {
+		occurences[num]++
+	}
+	return occurences
+}
+
+func calculateSimilarityScore(numbers_left, numbers_right []int) int {
+	occurences := countOccurrences(numbers_right)
+
+	total_similarity := 0
+	for _, val := range numbers_left {
+		total_similarity += (val * occurences[val])
+	}
+	return total_similarity
+}
+
+func main() {
+	// read columns into lists
+	numbers_left, numbers_right := txtToList("./input.txt")
+	// task 1
+	left_copy := make([]int, len(numbers_left))
+	right_copy := make([]int, len(numbers_right))
+	copy(left_copy, numbers_left)
+	copy(right_copy, numbers_right)
+	total_distance := calculateTotalDistance(left_copy, right_copy)
+	fmt.Println("The total distance is:", total_distance)
+
+	//task 2
+	total_similarity := calculateSimilarityScore(numbers_left, numbers_right)
+	fmt.Println("Total similarity:", total_similarity)
 }
