@@ -37,7 +37,7 @@ func horizontalChecks(row []rune, position int, direction string) bool {
 	return true
 }
 
-func traversalCheck(grid [][]rune, position []int) int {
+func traversalCheck1(grid [][]rune, position []int) int {
 	count := 0
 	// horizontal checks
 	row := grid[position[0]]
@@ -111,6 +111,61 @@ func traversalCheck(grid [][]rune, position []int) int {
 	return count
 }
 
+func traversalCheck2(grid [][]rune, position []int) int {
+	count := 0
+	row := grid[position[0]]
+
+	// Check if we have enough space in all directions (need 1 space in each direction)
+	if position[0] < len(grid)-1 && position[0] > 0 && position[1] < len(row)-1 && position[1] > 0 {
+		// Check diagonal down-right
+		diagonal := make([]rune, 4)
+		diagonal[0] = '.' // Dummy value
+		diagonal[1] = grid[position[0]-1][position[1]-1]
+		diagonal[2] = grid[position[0]][position[1]]
+		diagonal[3] = grid[position[0]+1][position[1]+1]
+		if horizontalChecks(diagonal, 0, "right") {
+			count++
+		}
+
+		// Check diagonal up-right
+		diagonal = make([]rune, 4)
+		diagonal[0] = '.' // Dummy value
+		diagonal[1] = grid[position[0]+1][position[1]-1]
+		diagonal[2] = grid[position[0]][position[1]]
+		diagonal[3] = grid[position[0]-1][position[1]+1]
+		if horizontalChecks(diagonal, 0, "right") {
+			count++
+		}
+
+		// Check diagonal down-left
+		diagonal = make([]rune, 4)
+		diagonal[0] = '.' // Dummy value
+		diagonal[1] = grid[position[0]-1][position[1]+1]
+		diagonal[2] = grid[position[0]][position[1]]
+		diagonal[3] = grid[position[0]+1][position[1]-1]
+		if horizontalChecks(diagonal, 0, "right") {
+			count++
+		}
+
+		// Check diagonal up-left
+		diagonal = make([]rune, 4)
+		diagonal[0] = '.' // Dummy value
+		diagonal[1] = grid[position[0]+1][position[1]+1]
+		diagonal[2] = grid[position[0]][position[1]]
+		diagonal[3] = grid[position[0]-1][position[1]-1]
+		if horizontalChecks(diagonal, 0, "right") {
+			count++
+		}
+	}
+
+	if count >= 2 {
+		count = 1
+	} else {
+		count = 0
+	}
+	return count
+}
+
 func txtToArray(txtFile string) [][]rune {
 	file, err := os.Open(txtFile)
 	if err != nil {
@@ -138,7 +193,20 @@ func puzzle1(grid [][]rune) {
 		for colIdx, val := range row {
 			if val == 'X' {
 				coords := []int{rowIdx, colIdx}
-				count += traversalCheck(grid, coords)
+				count += traversalCheck1(grid, coords)
+			}
+		}
+	}
+	fmt.Println("Count:", count)
+}
+
+func puzzle2(grid [][]rune) {
+	count := 0
+	for rowIdx, row := range grid {
+		for colIdx, val := range row {
+			if val == 'A' {
+				coords := []int{rowIdx, colIdx}
+				count += traversalCheck2(grid, coords)
 			}
 		}
 	}
@@ -149,4 +217,5 @@ func main() {
 	grid := txtToArray("input.txt")
 	// printArray(grid)
 	puzzle1(grid)
+	puzzle2(grid)
 }
